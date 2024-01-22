@@ -1,0 +1,46 @@
+name: Deploys
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  deploy:
+    name: Deploy Docker images
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_NAMESPACE: ${{secrets.DOCKER_NAMESPACE}}
+      DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+      DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      VERSION: '6.1'
+      BASED_OS: 'ubuntu2204'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Docker login
+        uses: nick-invision/retry@v2.9.0
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          command: docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+
+      - name: Build image
+        uses: nick-invision/retry@v2.9.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: cd docker-images/$VERSION/$BASED_OS; docker build . -t $DOCKER_NAMESPACE/ffmpeg:$VERSION-$BASED_OS
+
+      - name: Push image
+        uses: nick-invision/retry@v2.9.0
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: docker push $DOCKER_NAMESPACE/ffmpeg:$VERSION-$BASED_OS
