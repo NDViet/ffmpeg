@@ -11,7 +11,7 @@ jobs:
     name: Deploy Docker images
     runs-on: ubuntu-latest
     env:
-      DOCKER_NAMESPACE: ${{secrets.DOCKER_NAMESPACE}}
+      DOCKER_NAMESPACE: ${{vars.DOCKER_NAMESPACE}}
       DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
       DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       VERSION: '6.1'
