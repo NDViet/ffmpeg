@@ -5,7 +5,7 @@
 # https://hub.docker.com/r/jrottenberg/ffmpeg/
 #
 #
-FROM        ubuntu:20.04 AS base
+FROM        ubuntu:22.04 AS base
 
 WORKDIR     /tmp/workdir
 
@@ -28,8 +28,8 @@ ENV         FFMPEG_VERSION=6.1.1 \
     LIBASS_VERSION=0.13.7 \
     LIBPTHREAD_STUBS_VERSION=0.4 \
     LIBVIDSTAB_VERSION=1.1.0 \
-    LIBXCB_VERSION=1.13.1 \
-    XCBPROTO_VERSION=1.13 \
+    LIBXCB_VERSION=1.15 \
+    XCBPROTO_VERSION=1.15 \
     OGG_VERSION=1.3.2 \
     OPENCOREAMR_VERSION=0.1.5 \
     OPUS_VERSION=1.2 \
@@ -93,7 +93,7 @@ RUN      buildDeps="autoconf \
                     nasm \
                     perl \
                     pkg-config \
-                    python \
+                    python3 \
                     libssl-dev \
                     yasm \
                     zlib1g-dev" && \
@@ -404,7 +404,6 @@ RUN \
         make && \
         make install && \
         rm -rf ${DIR}
-
 
 ## libxml2 - for libbluray
 RUN \
