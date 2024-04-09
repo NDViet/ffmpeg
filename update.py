@@ -26,15 +26,17 @@ keep_version = []
 
 for v in json.loads(ffmpeg_releases):
     if not v["eol"]:
+        if "0.0" in v["latest"]:
+            v["latest"] = v["latest"].replace("0.0", "0")
         keep_version.append(v["latest"])
 
 
 VARIANTS = [
-    {"name": "ubuntu2004", "parent": "ubuntu"},
+    {"name": "ubuntu2204", "parent": "ubuntu"},
     {"name": "alpine313", "parent": "alpine"},
     {"name": "scratch313", "parent": "scratch"},
-    {"name": "vaapi2004", "parent": "vaapi"},
-    {"name": "nvidia2004", "parent": "nvidia"},
+    {"name": "vaapi2204", "parent": "vaapi"},
+    {"name": "nvidia2204", "parent": "nvidia"},
 ]
 
 
@@ -147,8 +149,8 @@ for version in keep_version:
             "--enable-libwebp",
             "--enable-libx264",
             "--enable-libx265",
-            "--enable-libxcb",
             "--enable-libxvid",
+            "--enable-libzimg",
             "--enable-libzmq",
             "--enable-nonfree",
             "--enable-openssl",

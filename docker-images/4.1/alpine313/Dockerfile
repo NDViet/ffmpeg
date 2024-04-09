@@ -49,6 +49,7 @@ ENV         FFMPEG_VERSION=4.1.11 \
     LIBARIBB24_VERSION=1.0.3 \
     LIBPNG_VERSION=1.6.9 \
     LIBVMAF_VERSION=2.1.1 \
+    ZIMG_VERSION=3.0.5 \
     SRC=/usr/local
 
 ARG         FREETYPE_SHA256SUM="5eab795ebb23ac77001cfb68b7d4d50b5d6c7469247b0b01b2c953269f658dac freetype-2.10.4.tar.gz"
@@ -67,7 +68,7 @@ ARG         LIBARIBB24_SHA256SUM="f61560738926e57f9173510389634d8c06cabedfa857db
 
 ARG         MAKEFLAGS="-j2"
 ARG         PKG_CONFIG_PATH="/opt/ffmpeg/share/pkgconfig:/opt/ffmpeg/lib/pkgconfig:/opt/ffmpeg/lib64/pkgconfig"
-ARG         PREFIX=/opt/ffmpeg
+ARG         PREFIX="/opt/ffmpeg"
 ARG         LD_LIBRARY_PATH="/opt/ffmpeg/lib:/opt/ffmpeg/lib64"
 
 
@@ -401,29 +402,6 @@ RUN \
         make install && \
         rm -rf ${DIR}
 
-RUN \
-        DIR=/tmp/libxcb-proto && \
-        mkdir -p ${DIR} && \
-        cd ${DIR} && \
-        curl -sLO https://xcb.freedesktop.org/dist/xcb-proto-${XCBPROTO_VERSION}.tar.gz && \
-        tar -zx --strip-components=1 -f xcb-proto-${XCBPROTO_VERSION}.tar.gz && \
-        ACLOCAL_PATH="${PREFIX}/share/aclocal" ./autogen.sh && \
-        ./configure --prefix="${PREFIX}" && \
-        make && \
-        make install && \
-        rm -rf ${DIR}
-
-RUN \
-        DIR=/tmp/libxcb && \
-        mkdir -p ${DIR} && \
-        cd ${DIR} && \
-        curl -sLO https://xcb.freedesktop.org/dist/libxcb-${LIBXCB_VERSION}.tar.gz && \
-        tar -zx --strip-components=1 -f libxcb-${LIBXCB_VERSION}.tar.gz && \
-        ACLOCAL_PATH="${PREFIX}/share/aclocal" ./autogen.sh && \
-        ./configure --prefix="${PREFIX}" --disable-static --enable-shared && \
-        make && \
-        make install && \
-        rm -rf ${DIR}
 
 ## libxml2 - for libbluray
 RUN \
@@ -503,6 +481,19 @@ RUN \
         make install && \
         rm -rf ${DIR}
 
+# zimg  https://github.com/sekrit-twc/zimg
+RUN \
+        DIR=/tmp/zimg && \
+        mkdir -p ${DIR} && \
+        cd ${DIR} && \
+        curl -sL https://github.com/sekrit-twc/zimg/archive/refs/tags/release-${ZIMG_VERSION}.tar.gz | \
+        tar -zx --strip-components=1 && \
+        ./autogen.sh && \
+        ./configure --prefix="${PREFIX}" --enable-shared  && \
+        make && \
+        make install && \
+        rm -rf ${DIR}
+
 ## Download ffmpeg https://ffmpeg.org/
 RUN  \
         DIR=/tmp/ffmpeg && mkdir -p ${DIR} && cd ${DIR} && \
@@ -544,8 +535,8 @@ RUN  \
         --enable-libwebp \
         --enable-libx264 \
         --enable-libx265 \
-        --enable-libxcb \
         --enable-libxvid \
+        --enable-libzimg \
         --enable-libzmq \
         --enable-nonfree \
         --enable-openssl \
