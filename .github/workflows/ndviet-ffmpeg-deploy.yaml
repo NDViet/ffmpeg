@@ -2,6 +2,15 @@ name: Deploys
 
 on:
   workflow_dispatch:
+    inputs:
+      VERSION:
+        description: 'FFmpeg version'
+        required: true
+        default: '7.0'
+      BASED_OS:
+        description: 'Base OS'
+        required: true
+        default: 'ubuntu2204'
   push:
     branches:
       - main
@@ -14,8 +23,8 @@ jobs:
       DOCKER_NAMESPACE: ${{vars.DOCKER_NAMESPACE}}
       DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
       DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-      VERSION: '7.0'
-      BASED_OS: 'ubuntu2204'
+      VERSION: ${{ github.event.inputs.VERSION || '7.0' }}
+      BASED_OS: ${{ github.event.inputs.BASED_OS || 'ubuntu2204' }}
 
     steps:
       - name: Checkout code
